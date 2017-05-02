@@ -1,0 +1,28 @@
+/* - Color variables -*/
+$light-blue:#0080c3;
+$dark-blue:#004eaf;
+
+$dark-red:#cc0b24;
+
+$light-grey-background:#f3f3f3;
+$light-grey-text:#999999;
+
+$dark-grey:#666666;
+
+/* - Font variables - */
+$body-font: "Whitney SSm","Helvetica Neue",Helvetica,Arial,sans-serif;
+$body-weight:400;
+$body-size:14px;
+
+$WhitneySSm: "Whitney SSm","Helvetica Neue",Helvetica,Arial,sans-serif;
+$ChronicleDisplay: "Chronicle Display", "Times Roman", "Times New Roman", Georgia, serif;
+$ChronicleSSm: "Chronicle SSm", "Times Roman", "Times New Roman", Georgia, serif;
+$Chronicle: "Chronicle", "Times Roman", "Times New Roman", Georgia, serif;
+
+$title-font: "Chronicle Display", "Times Roman", "Times New Roman", Georgia, serif;
+$title-weight:700;
+
+$article-font: "Chronicle SSm", "Times Roman", "Times New Roman", Georgia, serif;
+
+$header-font:"Whitney SSm","Helvetica Neue",Helvetica,Arial,sans-serif;
+$header-weight:600;
