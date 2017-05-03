@@ -30,7 +30,7 @@ const standardizeByKey = (data, key, rules, combineRest) => {
 };
 
 //Sort an array of records by a given key
-const sort = (arr, key) => {
+const sortByKey = (arr, key) => {
   //If returned value is <0, a should come first in array
   //If returned value is >0, b should come first in array
   return arr.slice(0).sort((a, b) => {
@@ -135,6 +135,6 @@ export {
   standardizeByKey,
   group,
   groupInto,
-  sort,
+  sortByKey,
   sortInto
 };

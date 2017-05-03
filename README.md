@@ -1,6 +1,11 @@
 # Sketchbook
 Really basic setup for sketching out different visualizations/code-based things and having them available at specific routes with client-side routing.
 
+- Express.js runs a basic server with a catchall route so you're not getting any 404s
+- Webpack doing some module bundling so you can work in modules
+- Babel transpiling from ES2015 to ES5
+
+
 ## How to use
 - Save common data sources in `src/data/` — you can generate JSON from a CSV using the tools documented below
 - Create a function that does something and write it as an ES2015 native module.

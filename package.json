@@ -4,8 +4,8 @@
   "description": "quick setup for working with code.",
   "main": "index.js",
   "scripts": {
-    "serve": "http-server -c-1 -p 4008",
-    "build" : "./node_modules/webpack/bin/webpack.js",
+    "serve": "node app.js",
+    "build": "./node_modules/webpack/bin/webpack.js",
     "start": "./node_modules/webpack/bin/webpack.js --watch --colors --progress"
   },
   "author": "",
@@ -20,7 +20,16 @@
     "csv": "^1.1.1",
     "csv-parse": "^1.2.0",
     "json-loader": "^0.5.4",
+    "node-sass": "^4.5.2",
+    "sass-loader": "^6.0.3",
     "superagent": "^3.5.2",
-    "webpack": "^2.3.3"
+    "webpack": "^2.4.1"
+  },
+  "dependencies": {
+    "css-loader": "^0.28.1",
+    "express": "^4.15.2",
+    "extract-text-webpack-plugin": "^2.1.0",
+    "sass-loader": "^6.0.3",
+    "style-loader": "^0.17.0"
   }
 }
