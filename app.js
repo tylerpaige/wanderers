@@ -2,7 +2,7 @@ var express = require('express');
 var app = express();
 
 //The public folder is available for all routes at the root dir
-app.use(express.static(`${__dirname}/dist)`);
+app.use(express.static(`${__dirname}/dist)`));
 
 // Default route should be a list of all other routes.
 app.get('*', function(req, res) {
