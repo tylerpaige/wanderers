@@ -8,10 +8,9 @@ export default (el) => {
   });
 
   if (!route) {
-    el.innerHTML = '';
     return false;
   }
 
-  el.innerHTML = route.render();
+  route.render(el);
   return true;
 };

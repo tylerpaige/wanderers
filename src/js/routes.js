@@ -1,4 +1,4 @@
-import demo from './viz/demo.js';
+import demo from './sketches/demo.js';
 
 export default [
   // {
