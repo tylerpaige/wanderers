@@ -5,6 +5,8 @@ import * as PIXI from 'pixi.js';
 const spriteName = 'circle';
 const spriteURL = '/circle.png';
 
+let ACTIONS = [];
+
 const setup = (app) => {
   let sprite = new PIXI.Sprite(
     PIXI.loader.resources[spriteName].texture
@@ -17,9 +19,20 @@ const setup = (app) => {
   app.ticker.add(delta => {
     loop(delta, app, sprite);
   });
+
+  ACTIONS.push(float);
+
+  window.float = () => {
+    ACTIONS = [];
+    ACTIONS.push(float);
+  }
+  window.drop = () => {
+    ACTIONS = [];
+    ACTIONS.push(drop);
+  }
 };
 
-const loop = (delta, app, sprite) => {
+const float = (delta, app, sprite) => {
   const verticalMotionFavor = 0.8;
   const horizontalMotionFavor = 0.5;
 
@@ -44,11 +57,19 @@ const loop = (delta, app, sprite) => {
 
   sprite.x = x;
   sprite.y = y;
-  // if (sprite.x < app.screen.width) {
-  //   sprite.x += delta * (app.screen.width / 100);
-  // } else {
-  //   sprite.x = -1 * sprite.width;
-  // }
+};
+
+const drop = (delta, app, sprite) => {
+  const distance = 1 * delta * (app.screen.height / 10);
+  const targetY = sprite.y + distance;
+  const y = targetY < app.screen.height - sprite.height ? targetY : app.screen.height - sprite.height;
+  sprite.y = y;
+};
+
+const loop = (delta, app, sprite) => {
+  ACTIONS.forEach(action => {
+    action(delta, app, sprite);
+  });
 }
 
 export default el => {
@@ -56,9 +77,6 @@ export default el => {
 
   const app = new PIXI.Application(width, 600, { backgroundColor: 0xffffff });
   el.appendChild(app.view);
-
-  console.log(app);
-  window.foobar = app;
   
   PIXI.loader.add(spriteName, spriteURL).load(setup.bind(this, app));
 

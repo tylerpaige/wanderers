@@ -44145,6 +44145,8 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 var spriteName = 'circle';
 var spriteURL = '/circle.png';
 
+var ACTIONS = [];
+
 var setup = function setup(app) {
   var sprite = new PIXI.Sprite(PIXI.loader.resources[spriteName].texture);
 
@@ -44155,9 +44157,20 @@ var setup = function setup(app) {
   app.ticker.add(function (delta) {
     loop(delta, app, sprite);
   });
+
+  ACTIONS.push(float);
+
+  window.float = function () {
+    ACTIONS = [];
+    ACTIONS.push(float);
+  };
+  window.drop = function () {
+    ACTIONS = [];
+    ACTIONS.push(drop);
+  };
 };
 
-var loop = function loop(delta, app, sprite) {
+var float = function float(delta, app, sprite) {
   var verticalMotionFavor = 0.8;
   var horizontalMotionFavor = 0.5;
 
@@ -44178,11 +44191,19 @@ var loop = function loop(delta, app, sprite) {
 
   sprite.x = x;
   sprite.y = y;
-  // if (sprite.x < app.screen.width) {
-  //   sprite.x += delta * (app.screen.width / 100);
-  // } else {
-  //   sprite.x = -1 * sprite.width;
-  // }
+};
+
+var drop = function drop(delta, app, sprite) {
+  var distance = 1 * delta * (app.screen.height / 10);
+  var targetY = sprite.y + distance;
+  var y = targetY < app.screen.height - sprite.height ? targetY : app.screen.height - sprite.height;
+  sprite.y = y;
+};
+
+var loop = function loop(delta, app, sprite) {
+  ACTIONS.forEach(function (action) {
+    action(delta, app, sprite);
+  });
 };
 
 exports.default = function (el) {
@@ -44192,9 +44213,6 @@ exports.default = function (el) {
 
   var app = new PIXI.Application(width, 600, { backgroundColor: 0xffffff });
   el.appendChild(app.view);
-
-  console.log(app);
-  window.foobar = app;
 
   PIXI.loader.add(spriteName, spriteURL).load(setup.bind(undefined, app));
 
