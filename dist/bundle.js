@@ -44157,15 +44157,23 @@ var setup = function setup(app) {
     });
   });
 
-  sprites.forEach(function (sprite) {
-    sprite.beginFloating();
-  });
+  var waitingPeriod = void 0;
+  var waitToFloat = function waitToFloat() {
+    waitingPeriod = setTimeout(function () {
+      sprites.forEach(function (sprite) {
+        sprite.beginFloating();
+      });
+    }, 3000);
+  };
+  waitToFloat();
 
-  setTimeout(function () {
+  window.addEventListener('scroll', function () {
     sprites.forEach(function (sprite) {
       sprite.beginDropping();
     });
-  }, 1000 * 10);
+    clearTimeout(waitingPeriod);
+    waitToFloat();
+  });
 };
 
 exports.default = function (el) {

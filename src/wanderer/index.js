@@ -18,15 +18,23 @@ const setup = (app) => {
     });
   });
 
-  sprites.forEach(sprite => {
-    sprite.beginFloating();
-  });
+  let waitingPeriod;
+  let waitToFloat = () => {
+    waitingPeriod = setTimeout(() => {
+      sprites.forEach(sprite => {
+        sprite.beginFloating();
+      });
+    }, 3000);
+  };
+  waitToFloat();
 
-  setTimeout(() => {
+  window.addEventListener('scroll', () => {
     sprites.forEach(sprite => {
       sprite.beginDropping();
     });
-  }, 1000 * 10);
+    clearTimeout(waitingPeriod);
+    waitToFloat();
+  });
 };
 
 export default el => {
