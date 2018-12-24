@@ -44145,65 +44145,27 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 var spriteName = 'circle';
 var spriteURL = '/circle.png';
 
-var ACTIONS = [];
-
 var setup = function setup(app) {
-  var sprite = new PIXI.Sprite(PIXI.loader.resources[spriteName].texture);
+  var spriteCount = 5;
+  var sprites = Array.from({ length: spriteCount }).map(function () {
+    return new _wanderer2.default(app);
+  });
 
-  sprite.x = (0, _randomNumber2.default)(0, app.screen.width - sprite.width);
-  sprite.y = app.screen.height - sprite.height;
-
-  app.stage.addChild(sprite);
   app.ticker.add(function (delta) {
-    loop(delta, app, sprite);
+    sprites.forEach(function (sprite) {
+      sprite.update(delta);
+    });
   });
 
-  ACTIONS.push(float);
-
-  window.float = function () {
-    ACTIONS = [];
-    ACTIONS.push(float);
-  };
-  window.drop = function () {
-    ACTIONS = [];
-    ACTIONS.push(drop);
-  };
-};
-
-var float = function float(delta, app, sprite) {
-  var verticalMotionFavor = 0.8;
-  var horizontalMotionFavor = 0.5;
-
-  var xDistance = delta * (app.screen.width / 500);
-  var yDistance = delta * (app.screen.height / 1000);
-
-  var xMovementModifier = Math.random() > 0.5 ? 1 : -1;
-  var yMovementModifier = Math.random() > 0.8 ? 1 : -1;
-
-  var xMovement = Math.random() < horizontalMotionFavor ? xDistance * xMovementModifier : 0;
-  var yMovement = Math.random() < verticalMotionFavor ? yDistance * yMovementModifier : 0;
-
-  var xTarget = sprite.x + xMovement;
-  var yTarget = sprite.y + yMovement;
-
-  var x = xTarget < app.screen.width ? xTarget : sprite.x;
-  var y = yTarget > 0 ? yTarget : sprite.y;
-
-  sprite.x = x;
-  sprite.y = y;
-};
-
-var drop = function drop(delta, app, sprite) {
-  var distance = 1 * delta * (app.screen.height / 10);
-  var targetY = sprite.y + distance;
-  var y = targetY < app.screen.height - sprite.height ? targetY : app.screen.height - sprite.height;
-  sprite.y = y;
-};
-
-var loop = function loop(delta, app, sprite) {
-  ACTIONS.forEach(function (action) {
-    action(delta, app, sprite);
+  sprites.forEach(function (sprite) {
+    sprite.beginFloating();
   });
+
+  setTimeout(function () {
+    sprites.forEach(function (sprite) {
+      sprite.beginDropping();
+    });
+  }, 1000 * 10);
 };
 
 exports.default = function (el) {
@@ -44230,11 +44192,103 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _randomNumber = __webpack_require__(206);
+
+var _randomNumber2 = _interopRequireDefault(_randomNumber);
+
+var _pixi = __webpack_require__(163);
+
+var PIXI = _interopRequireWildcard(_pixi);
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-var Wanderer = function Wanderer(x, y) {
-  _classCallCheck(this, Wanderer);
-};
+var Wanderer = function () {
+  function Wanderer(app) {
+    _classCallCheck(this, Wanderer);
+
+    this.app = app;
+    this.sprite = new PIXI.Sprite(PIXI.loader.resources['circle'].texture);
+
+    this.sprite.x = (0, _randomNumber2.default)(0, app.screen.width - this.sprite.width);
+    this.sprite.y = app.screen.height - this.sprite.height;
+
+    app.stage.addChild(this.sprite);
+
+    this.actions = [];
+  }
+
+  _createClass(Wanderer, [{
+    key: 'update',
+    value: function update(delta) {
+      var _this = this;
+
+      var app = this.app;
+
+      this.actions.forEach(function (action) {
+        action.call(_this, delta, app);
+      });
+    }
+  }, {
+    key: 'beginFloating',
+    value: function beginFloating() {
+      this.actions = [];
+      this.actions.push(this.float);
+    }
+  }, {
+    key: 'beginDropping',
+    value: function beginDropping() {
+      this.actions = [];
+      this.actions.push(this.drop);
+    }
+  }, {
+    key: 'float',
+    value: function float(delta) {
+      var sprite = this.sprite,
+          app = this.app;
+
+      var verticalMotionFavor = 0.8;
+      var horizontalMotionFavor = 0.5;
+
+      var xDistance = delta * (app.screen.width / 500);
+      var yDistance = delta * (app.screen.height / 1000);
+
+      var xMovementModifier = Math.random() > 0.5 ? 1 : -1;
+      var yMovementModifier = Math.random() > 0.8 ? 1 : -1;
+
+      var xMovement = Math.random() < horizontalMotionFavor ? xDistance * xMovementModifier : 0;
+      var yMovement = Math.random() < verticalMotionFavor ? yDistance * yMovementModifier : 0;
+
+      var xTarget = sprite.x + xMovement;
+      var yTarget = sprite.y + yMovement;
+
+      var x = xTarget < app.screen.width ? xTarget : sprite.x;
+      var y = yTarget > 0 ? yTarget : sprite.y;
+
+      sprite.x = x;
+      sprite.y = y;
+    }
+  }, {
+    key: 'drop',
+    value: function drop(delta) {
+      var sprite = this.sprite,
+          app = this.app;
+
+
+      var distance = 1 * delta * (app.screen.height / 10);
+      var targetY = sprite.y + distance;
+      var y = targetY < app.screen.height - sprite.height ? targetY : app.screen.height - sprite.height;
+      sprite.y = y;
+    }
+  }]);
+
+  return Wanderer;
+}();
 
 exports.default = Wanderer;
 
