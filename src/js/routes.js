@@ -1,14 +1,9 @@
-import demo from './sketches/demo.js';
+import index from '../wanderer/';
 
 export default [
-  // {
-  //   path : '/abc',
-  //   render : importedFunction,
-  //   id : 'Label for Navigation'
-  // }
   {
-    path : '/demo',
-    render : demo,
-    id : 'Demonstration Sketch'
+    path : '/foobar',
+    render : index,
+    id : 'Wanderers'
   }
 ];

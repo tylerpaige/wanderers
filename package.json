@@ -29,6 +29,7 @@
     "css-loader": "^0.28.1",
     "express": "^4.15.2",
     "extract-text-webpack-plugin": "^2.1.0",
+    "pixi.js": "^4.8.4",
     "sass-loader": "^6.0.3",
     "style-loader": "^0.17.0"
   }
