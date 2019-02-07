@@ -1,17 +1,45 @@
 import randomNumber from '../../tools/random-number';
-import * as PIXI from 'pixi.js';
+import clamp from '../../tools/clamp';
+// import * as PIXI from 'pixi.js';
 
 export default class Wanderer {
   constructor(app) {
     this.app = app;
-    this.sprite = new PIXI.Sprite(PIXI.loader.resources['circle'].texture);
 
+    this.sprite = new PIXI.Sprite(PIXI.loader.resources['circle'].texture);
     this.sprite.x = randomNumber(0, app.screen.width - this.sprite.width);
     this.sprite.y = app.screen.height - this.sprite.height;
-
     app.stage.addChild(this.sprite);
 
+    this.safeArea = {};
+    this.safeArea.x = {};
+    this.safeArea.x.min = 0;
+    this.safeArea.x.max = this.app.screen.width - this.sprite.width;
+    this.safeArea.y = {};
+    this.safeArea.y.min = 0;
+    this.safeArea.y.max = this.app.screen.height - this.sprite.height;
+
+    this.movementConfig = {};
+    this.movementConfig.minXDistance = this.app.screen.width * 0.125;
+    this.movementConfig.maxXDistance = this.app.screen.width * 0.33;
+    this.movementConfig.minYDistance = this.app.screen.height * -0.2;
+    this.movementConfig.maxYDistance = this.app.screen.height * 0.01;
+
+    this.targetInterval = randomNumber(1500, 3000);
+
     this.actions = [];
+
+    this.state = {};
+    this.state.lastTimeTargeted = new Date().getTime();
+    this.state.target = null;
+    this.state.origin = null;
+    this.state.ellipse = {};
+    this.state.ellipse.center = null;
+    this.state.ellipse.radii = null;
+    this.state.angle = null;
+    this.state.leftward = Math.random() > 0.5;
+
+    this.getTarget();
   }
 
   update(delta) {
@@ -31,27 +59,83 @@ export default class Wanderer {
     this.actions.push(this.drop);
   }
 
+  getTarget(now = new Date().getTime()) {
+    const {
+      maxXDistance,
+      minXDistance,
+      minYDistance,
+      maxYDistance
+    } = this.movementConfig;
+    const xMultiplier = this.state.leftward ? -1 : 1;
+
+    const originX = this.sprite.x;
+    const originY = this.sprite.y;
+    this.state.origin = [originX, originY];
+
+    const deltaX = xMultiplier * randomNumber(minXDistance, maxXDistance);
+    const deltaY = randomNumber(minYDistance, maxYDistance);
+
+    const targetX = originX + deltaX;
+    const targetY = originY + deltaY;
+    this.state.target = [targetX, targetY];
+
+    const ellipseCenterX = originX;
+    const ellipseCenterY = targetY;
+    this.state.ellipse.center = [ellipseCenterX, ellipseCenterY];
+
+    const radiusX = this.state.leftward ? originX - targetX : targetX - originX;
+    const radiusY = originY - targetY;
+    this.state.ellipse.radii = [radiusX, radiusY];
+
+    this.state.angle = 0;
+
+    this.state.lastTimeTargeted = now;
+    this.state.nextCheckpoint = now + this.targetInterval;
+
+    this.state.angleModifier = this.state.leftward ? 90 : 0;
+    this.state.angleFn = this.state.leftward
+      ? t => (t * 90 + 90) * (Math.PI / 180)
+      : t => (90 - t * 90) * (Math.PI / 180);
+
+    this.state.leftward = !this.state.leftward;
+  }
+
+  pointAlongEllipse(angle) {
+    const { center, radii } = this.state.ellipse;
+    const [horRadius, vertRadius] = radii;
+    const [centerX, centerY] = center;
+
+    const x = clamp(
+      Math.cos(angle) * horRadius + centerX,
+      this.safeArea.x.min,
+      this.safeArea.x.max
+    );
+    const y = clamp(
+      Math.sin(angle) * vertRadius + centerY,
+      this.safeArea.y.min,
+      this.safeArea.y.max
+    );
+
+    return [x, y];
+  }
+
   float(delta) {
-    const { sprite, app } = this;
-    const verticalMotionFavor = 0.8;
-    const horizontalMotionFavor = 0.5;
+    const { sprite } = this;
 
-    const xDistance = delta * (app.screen.width / 500);
-    const yDistance = delta * (app.screen.height / 1000);
+    /*
+      every n seconds pick a new target
+      get there by way of arc
+    */
+    const now = new Date().getTime();
+    const timeCompletion =
+      (now - this.state.lastTimeTargeted) / this.targetInterval;
+    if (timeCompletion + 0.01 >= 1) {
+      this.getTarget(now);
+      return;
+    }
 
-    const xMovementModifier = Math.random() > 0.5 ? 1 : -1;
-    const yMovementModifier = Math.random() > 0.8 ? 1 : -1;
-
-    const xMovement =
-      Math.random() < horizontalMotionFavor ? xDistance * xMovementModifier : 0;
-    const yMovement =
-      Math.random() < verticalMotionFavor ? yDistance * yMovementModifier : 0;
-
-    const xTarget = sprite.x + xMovement;
-    const yTarget = sprite.y + yMovement;
-
-    const x = xTarget < app.screen.width ? xTarget : sprite.x;
-    const y = yTarget > 0 ? yTarget : sprite.y;
+    const angle = this.state.angleFn(timeCompletion);
+    const [x, y] = this.pointAlongEllipse(angle);
 
     sprite.x = x;
     sprite.y = y;

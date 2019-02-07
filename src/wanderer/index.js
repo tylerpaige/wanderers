@@ -1,12 +1,12 @@
 import Wanderer from './wanderer.js';
 import randomNumber from '../../tools/random-number';
-import * as PIXI from 'pixi.js';
+// import * as PIXI from 'pixi.js';
 
 const spriteName = 'circle';
-const spriteURL = '/circle.png';
+const spriteURL = '/cloud.png';
 
 const setup = (app) => {
-  const spriteCount = 5;
+  const spriteCount = 15;
   const sprites = Array.from({ length : spriteCount})
     .map(() => {
       return new Wanderer(app);
@@ -19,29 +19,35 @@ const setup = (app) => {
   });
 
   let waitingPeriod;
-  let waitToFloat = () => {
+  let waitToFloat = (forHowLong = 3000) => {
     waitingPeriod = setTimeout(() => {
       sprites.forEach(sprite => {
         sprite.beginFloating();
       });
-    }, 3000);
+    }, forHowLong);
   };
-  waitToFloat();
+  waitToFloat(0);
 
-  window.addEventListener('scroll', () => {
-    sprites.forEach(sprite => {
-      sprite.beginDropping();
-    });
-    clearTimeout(waitingPeriod);
-    waitToFloat();
-  });
+  // window.addEventListener('scroll', () => {
+  //   sprites.forEach(sprite => {
+  //     sprite.beginDropping();
+  //   });
+  //   clearTimeout(waitingPeriod);
+  //   waitToFloat();
+  // });
 };
 
 export default el => {
-  const { width, height } = el.getBoundingClientRect();
+  const box = document.createElement('div');
+  box.style.width = '500px';
+  box.style.height = '500px';
+  box.style.background = 'tomato';
+  el.appendChild(box);
 
-  const app = new PIXI.Application(width, 600, { backgroundColor: 0xffffff });
-  el.appendChild(app.view);
+  const { width, height } = box.getBoundingClientRect();
+
+  const app = new PIXI.Application(width, height, { transparent : true });
+  box.appendChild(app.view);
   
   PIXI.loader.add(spriteName, spriteURL).load(setup.bind(this, app));
 

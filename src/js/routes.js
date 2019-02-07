@@ -2,7 +2,7 @@ import index from '../wanderer/';
 
 export default [
   {
-    path : '/foobar',
+    path : '/',
     render : index,
     id : 'Wanderers'
   }
