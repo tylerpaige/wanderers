@@ -26,7 +26,9 @@ const setup = (app) => {
       });
     }, forHowLong);
   };
-  waitToFloat(0);
+  waitToFloat(1000);
+
+  return sprites;
 
   // window.addEventListener('scroll', () => {
   //   sprites.forEach(sprite => {
@@ -48,8 +50,20 @@ export default el => {
 
   const app = new PIXI.Application(width, height, { transparent : true });
   box.appendChild(app.view);
+
+  app.view.addEventListener('click', () => {
+
+  })
   
-  PIXI.loader.add(spriteName, spriteURL).load(setup.bind(this, app));
+  PIXI.loader.add(spriteName, spriteURL).load(() => {
+    const sprites = setup(app)
+    window.addEventListener('scroll', () => {
+      sprites.forEach(s => s.beginDropping());
+    });
+    app.view.addEventListener('mousemove', () => {
+      sprites.forEach(s => s.beginDropping());
+    });
+  });
 
   return;
 };

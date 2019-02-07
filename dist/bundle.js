@@ -243,7 +243,9 @@ var setup = function setup(app) {
       });
     }, forHowLong);
   };
-  waitToFloat(0);
+  waitToFloat(1000);
+
+  return sprites;
 
   // window.addEventListener('scroll', () => {
   //   sprites.forEach(sprite => {
@@ -268,7 +270,21 @@ exports.default = function (el) {
   var app = new PIXI.Application(width, height, { transparent: true });
   box.appendChild(app.view);
 
-  PIXI.loader.add(spriteName, spriteURL).load(setup.bind(undefined, app));
+  app.view.addEventListener('click', function () {});
+
+  PIXI.loader.add(spriteName, spriteURL).load(function () {
+    var sprites = setup(app);
+    window.addEventListener('scroll', function () {
+      sprites.forEach(function (s) {
+        return s.beginDropping();
+      });
+    });
+    app.view.addEventListener('mousemove', function () {
+      sprites.forEach(function (s) {
+        return s.beginDropping();
+      });
+    });
+  });
 
   return;
 };
@@ -327,7 +343,7 @@ var Wanderer = function () {
     this.movementConfig.minYDistance = this.app.screen.height * -0.2;
     this.movementConfig.maxYDistance = this.app.screen.height * 0.01;
 
-    this.targetInterval = (0, _randomNumber2.default)(1500, 3000);
+    this.targetInterval = (0, _randomNumber2.default)(3000, 6000);
 
     this.actions = [];
 
@@ -398,8 +414,6 @@ var Wanderer = function () {
       var radiusY = originY - targetY;
       this.state.ellipse.radii = [radiusX, radiusY];
 
-      this.state.angle = 0;
-
       this.state.lastTimeTargeted = now;
       this.state.nextCheckpoint = now + this.targetInterval;
 
@@ -428,7 +442,8 @@ var Wanderer = function () {
           centerY = _center[1];
 
       var x = (0, _clamp2.default)(Math.cos(angle) * horRadius + centerX, this.safeArea.x.min, this.safeArea.x.max);
-      var y = (0, _clamp2.default)(Math.sin(angle) * vertRadius + centerY, this.safeArea.y.min, this.safeArea.y.max);
+      var yMin = Math.max(this.app.view.offsetTop * -1, this.safeArea.y.min);
+      var y = (0, _clamp2.default)(Math.sin(angle) * vertRadius + centerY, yMin, this.safeArea.y.max);
 
       return [x, y];
     }
@@ -462,6 +477,8 @@ var Wanderer = function () {
   }, {
     key: 'drop',
     value: function drop(delta) {
+      var _this2 = this;
+
       var sprite = this.sprite,
           app = this.app;
 
@@ -470,6 +487,27 @@ var Wanderer = function () {
       var targetY = sprite.y + distance;
       var y = targetY < app.screen.height - sprite.height ? targetY : app.screen.height - sprite.height;
       sprite.y = y;
+
+      var that = this;
+      clearTimeout(that.state.delay);
+
+      if (targetY >= app.screen.height - sprite.height) {
+        this.actions = [];
+        this.state.delay = setTimeout(function () {
+          _this2.beginFloating();
+        }, 3000);
+      }
+
+      this.state.lastTimeTargeted = null;
+      this.state.target = null;
+      this.state.origin = null;
+      this.state.ellipse = {};
+      this.state.ellipse.center = null;
+      this.state.ellipse.radii = null;
+      this.state.angle = null;
+      this.state.leftward = Math.random() > 0.5;
+      this.state.lastTimeTargeted = null;
+      this.state.nextCheckpoint = null;
     }
   }]);
 

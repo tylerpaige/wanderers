@@ -25,7 +25,7 @@ export default class Wanderer {
     this.movementConfig.minYDistance = this.app.screen.height * -0.2;
     this.movementConfig.maxYDistance = this.app.screen.height * 0.01;
 
-    this.targetInterval = randomNumber(1500, 3000);
+    this.targetInterval = randomNumber(3000, 6000);
 
     this.actions = [];
 
@@ -87,8 +87,6 @@ export default class Wanderer {
     const radiusY = originY - targetY;
     this.state.ellipse.radii = [radiusX, radiusY];
 
-    this.state.angle = 0;
-
     this.state.lastTimeTargeted = now;
     this.state.nextCheckpoint = now + this.targetInterval;
 
@@ -110,11 +108,13 @@ export default class Wanderer {
       this.safeArea.x.min,
       this.safeArea.x.max
     );
-    const y = clamp(
+    const yMin = Math.max(this.app.view.offsetTop * -1, this.safeArea.y.min);
+    let y = clamp(
       Math.sin(angle) * vertRadius + centerY,
-      this.safeArea.y.min,
+      yMin,
       this.safeArea.y.max
     );
+    
 
     return [x, y];
   }
@@ -151,5 +151,26 @@ export default class Wanderer {
         ? targetY
         : app.screen.height - sprite.height;
     sprite.y = y;
+
+    const that = this;
+    clearTimeout(that.state.delay)
+
+    if (targetY >= (app.screen.height - sprite.height)) {
+      this.actions = [];
+      this.state.delay = setTimeout(() => {
+        this.beginFloating();
+      }, 3000);
+    }
+
+    this.state.lastTimeTargeted = null;
+    this.state.target = null;
+    this.state.origin = null;
+    this.state.ellipse = {};
+    this.state.ellipse.center = null;
+    this.state.ellipse.radii = null;
+    this.state.angle = null;
+    this.state.leftward = Math.random() > 0.5;
+    this.state.lastTimeTargeted = null;
+    this.state.nextCheckpoint = null;
   }
 }
