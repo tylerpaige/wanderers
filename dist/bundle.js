@@ -224,7 +224,7 @@ var spriteURL = '/cloud.png';
 var setup = function setup(app) {
   var spriteCount = 15;
   var sprites = Array.from({ length: spriteCount }).map(function () {
-    return new _wanderer2.default(app);
+    return new _wanderer2.default(app, spriteName);
   });
 
   app.ticker.add(function (delta) {
@@ -303,12 +303,12 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 // import * as PIXI from 'pixi.js';
 
 var Wanderer = function () {
-  function Wanderer(app) {
+  function Wanderer(app, spriteName) {
     _classCallCheck(this, Wanderer);
 
     this.app = app;
 
-    this.sprite = new PIXI.Sprite(PIXI.loader.resources['circle'].texture);
+    this.sprite = new PIXI.Sprite(PIXI.loader.resources[spriteName].texture);
     this.sprite.x = (0, _randomNumber2.default)(0, app.screen.width - this.sprite.width);
     this.sprite.y = app.screen.height - this.sprite.height;
     app.stage.addChild(this.sprite);

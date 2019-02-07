@@ -3,10 +3,10 @@ import clamp from '../../tools/clamp';
 // import * as PIXI from 'pixi.js';
 
 export default class Wanderer {
-  constructor(app) {
+  constructor(app, spriteName) {
     this.app = app;
 
-    this.sprite = new PIXI.Sprite(PIXI.loader.resources['circle'].texture);
+    this.sprite = new PIXI.Sprite(PIXI.loader.resources[spriteName].texture);
     this.sprite.x = randomNumber(0, app.screen.width - this.sprite.width);
     this.sprite.y = app.screen.height - this.sprite.height;
     app.stage.addChild(this.sprite);

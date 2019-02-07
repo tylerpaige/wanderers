@@ -9,7 +9,7 @@ const setup = (app) => {
   const spriteCount = 15;
   const sprites = Array.from({ length : spriteCount})
     .map(() => {
-      return new Wanderer(app);
+      return new Wanderer(app, spriteName);
     });
   
   app.ticker.add(delta => {
